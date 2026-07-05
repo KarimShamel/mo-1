@@ -3,31 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happiest Birthday, Hamody 🩶</title>
+    <title>Happy Birthday Hamody 🩶</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     
     <style>
-        /* --- RESET & GLOBAL STYLES --- */
+        /* --- CSS Reset & Variables --- */
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-gradient: linear-gradient(135deg, #111111 0%, #222222 50%, #1a1a1a 100%);
+            --silver-primary: #e0e0e0;
+            --silver-metallic: linear-gradient(135deg, #bcc6cc 0%, #eee 50%, #9aa2a7 100%);
+            --text-main: #f5f5f5;
+            --text-muted: #aaaaaa;
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(224, 224, 224, 0.15);
+            --glass-glow: rgba(255, 255, 255, 0.05);
         }
 
         body, html {
-            width: 100%;
-            min-height: 100%;
-            font-family: 'Montserrat', sans-serif;
-            background: radial-gradient(circle at center, #232526 0%, #111314 100%);
-            color: #e0e0e0;
+            font-family: 'Inter', sans-serif;
+            background: #111;
+            color: var(--text-main);
             overflow-x: hidden;
-            scroll-behavior: smooth;
+            min-height: 100vh;
         }
 
-        /* --- BACKGROUND FLOATING HEARTS --- */
-        #hearts-container {
+        /* --- Background Floating Hearts Canvas --- */
+        #heartsCanvas {
             position: fixed;
             top: 0;
             left: 0;
@@ -35,210 +44,299 @@
             height: 100%;
             z-index: 1;
             pointer-events: none;
-            overflow: hidden;
         }
 
-        .floating-heart {
-            position: absolute;
-            bottom: -50px;
-            color: rgba(192, 192, 192, 0.4); /* Elegant translucent silver */
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            font-size: var(--size);
-            left: var(--left);
-            animation: floatUp var(--duration) linear infinite;
-        }
-
-        @keyframes floatUp {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: var(--opacity);
-            }
-            90% {
-                opacity: var(--opacity);
-            }
-            100% {
-                transform: translateY(-105vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        /* --- ENTRANCE OVERLAY --- */
-        #entrance-overlay {
+        /* --- Global Flow / Screens --- */
+        .screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #1c1d1f 0%, #0b0c10 100%);
-            z-index: 9999;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 1s ease, visibility 1s ease;
+            z-index: 10;
+            background: var(--bg-gradient);
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            padding: 20px;
         }
 
-        #entrance-overlay.hidden {
+        .screen.hidden {
             opacity: 0;
             visibility: hidden;
+            pointer-events: none;
         }
 
-        .gate-card {
-            text-align: center;
+        /* --- Glassmorphism UI Elements --- */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 0 12px var(--glass-glow);
+            border-radius: 16px;
             padding: 40px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(192, 192, 192, 0.2);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            max-width: 90%;
-            width: 400px;
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            z-index: 12;
         }
 
-        .gate-btn {
-            background: linear-gradient(135deg, #e0e0e0 0%, #a6a6a6 100%);
-            color: #111314;
-            border: none;
-            padding: 15px 35px;
-            font-size: 1.1rem;
+        h1, h2, h3 {
             font-family: 'Playfair Display', serif;
-            font-weight: 600;
-            border-radius: 50px;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        /* --- Step 1: Password Screen --- */
+        .password-prompt {
+            font-size: 1.2rem;
+            margin-bottom: 24px;
+            color: var(--silver-primary);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 14px 20px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            letter-spacing: 2px;
+        }
+
+        .password-input:focus {
+            border-color: rgba(255,255,255,0.4);
+            box-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+
+        .btn-metallic {
+            background: var(--silver-metallic);
+            color: #111;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .gate-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+        .btn-metallic:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.2);
         }
 
-        /* --- MAIN CONTENT CONTAINER --- */
+        .error-msg {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            min-height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* Shake Keyframe for wrong password */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* --- Step 2: Entrance Gate --- */
+        .gate-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            background: var(--silver-metallic);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- Step 3: Main Website Content --- */
         .main-wrapper {
             position: relative;
             z-index: 2;
-            max-width: 800px;
+            width: 100%;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 60px 20px 140px 20px; /* Extra bottom padding for music player */
-            text-align: center;
+            padding: 60px 20px 140px 20px; /* space at bottom for music bar */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 60px;
             opacity: 0;
             transform: translateY(20px);
-            transition: opacity 1.5s ease 0.5s, transform 1.5s ease 0.5s;
+            transition: opacity 1s ease 0.5s, transform 1s ease 0.5s;
         }
 
-        .main-wrapper.reveal {
+        .main-wrapper.revealed {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* --- HEADER SECTION --- */
-        header h1 {
-            font-family: 'Playfair Display', serif;
+        /* Header section */
+        .main-header {
+            text-align: center;
+        }
+
+        .birthday-title {
             font-size: 3rem;
-            font-weight: 600;
-            background: linear-gradient(135deg, #ffffff 0%, #b0b5bc 50%, #7e848c 100%);
+            line-height: 1.2;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ffffff 0%, #b0b0b0 50%, #ffffff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 40px;
-            letter-spacing: 1px;
+            animation: silverGlow 3s ease-in-out infinite alternate;
         }
 
-        /* --- COUNTDOWN TIMER --- */
+        @keyframes silverGlow {
+            from { drop-shadow: 0 0 2px rgba(255,255,255,0.1); }
+            to { drop-shadow: 0 0 12px rgba(255,255,255,0.3); }
+        }
+
+        /* Countdown Timer */
         .countdown-container {
-            display: flex;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
-            margin-bottom: 50px;
-            flex-wrap: wrap;
+            width: 100%;
+            max-width: 600px;
         }
 
-        .time-box {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(192, 192, 192, 0.25);
-            padding: 15px;
+        .countdown-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(224, 224, 224, 0.2);
             border-radius: 12px;
-            min-width: 85px;
-            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05), 0 8px 20px rgba(0,0,0,0.3);
-            backdrop-filter: blur(5px);
+            padding: 20px 10px;
+            text-align: center;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.02);
+            position: relative;
         }
 
-        .time-box .num {
-            font-size: 2rem;
-            font-weight: 400;
-            color: #ffffff;
+        .countdown-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 12px;
+            padding: 1px;
+            background: var(--silver-metallic);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.3;
+        }
+
+        .countdown-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #fff;
             display: block;
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
         }
 
-        .time-box .label {
+        .countdown-label {
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #a6a6a6;
+            color: var(--text-muted);
             margin-top: 5px;
             display: block;
         }
 
-        .celebration-msg {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: #ffffff;
-            font-style: italic;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            margin-bottom: 50px;
+        /* Love Letter Frame */
+        .love-letter-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(224, 224, 224, 0.18);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            width: 100%;
         }
 
-        /* --- GLASSMORPHISM LOVE LETTER --- */
-        .love-letter-section {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(192, 192, 192, 0.2);
-            border-radius: 24px;
-            padding: 40px 30px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-            text-align: left;
+        .letter-content {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
             line-height: 1.8;
-            font-size: 1.05rem;
-            font-weight: 300;
-            letter-spacing: 0.5px;
             color: #e5e5e5;
-            position: relative;
-        }
-
-        .love-letter-section p {
-            margin-bottom: 25px;
-            white-space: pre-line; /* Keeps original text spacing formatting naturally */
-        }
-
-        .love-letter-section p:last-child {
-            margin-bottom: 0;
-            font-family: 'Playfair Display', serif;
+            text-align: center;
+            white-space: pre-line; /* respects paragraphs and line breaks */
             font-style: italic;
-            text-align: right;
-            font-size: 1.2rem;
-            color: #ffffff;
         }
 
-        /* --- STICKY BOTTOM MUSIC PLAYER --- */
-        .audio-player-container {
+        /* Photo Gallery Layout */
+        .gallery-container {
+            width: 100%;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+
+        .photo-frame {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 10px;
+            border: 2px solid rgba(224, 224, 224, 0.4);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            background: #1a1a1a;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            display: block;
+        }
+
+        .photo-frame:hover img {
+            transform: scale(1.12);
+        }
+
+        /* Sticky Music Player Bar */
+        .music-player-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            background: rgba(17, 19, 20, 0.85);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(192, 192, 192, 0.25);
-            padding: 15px 20px;
-            z-index: 999;
+            background: rgba(17, 17, 17, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(224, 224, 224, 0.15);
+            padding: 15px 30px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .music-player-bar.active {
+            transform: translateY(0);
         }
 
         .player-controls {
@@ -247,266 +345,328 @@
             gap: 20px;
             width: 100%;
             max-width: 500px;
+            justify-content: center;
         }
 
-        .play-btn {
-            background: none;
-            border: 1px solid rgba(255,255,255,0.4);
-            color: #ffffff;
-            font-size: 1.2rem;
-            width: 45px;
-            height: 45px;
+        .track-info {
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            color: var(--silver-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-play-pause {
+            background: var(--silver-metallic);
+            border: none;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.3s ease;
+            transition: transform 0.2s;
         }
 
-        .play-btn:hover {
-            background: #ffffff;
-            color: #111314;
-            border-color: #ffffff;
+        .btn-play-pause:hover {
+            transform: scale(1.08);
         }
 
-        .track-info {
-            flex-grow: 1;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            color: #c0c0c0;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
+        .btn-play-pause svg {
+            width: 16px;
+            height: 16px;
+            fill: #111;
         }
 
-        .volume-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .volume-container span {
-            font-size: 1rem;
-        }
-
-        .volume-slider {
-            -webkit-appearance: none;
-            width: 80px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 2px;
-            outline: none;
-        }
-
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ffffff;
-            cursor: pointer;
-            box-shadow: 0 0 5px rgba(255,255,255,0.5);
-        }
-
-        /* --- RESPONSIVE ADJUSTMENTS --- */
-        @media (max-width: 600px) {
-            header h1 {
+        /* --- Responsive Design Media Queries --- */
+        @media (max-width: 768px) {
+            .birthday-title {
                 font-size: 2.2rem;
             }
-            .love-letter-section {
-                padding: 25px 20px;
-                font-size: 0.95rem;
+            .countdown-container {
+                grid-template-columns: repeat(2, 1fr);
             }
-            .time-box {
-                min-width: 70px;
-                padding: 10px;
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2x2 on small screens for better viewing */
             }
-            .time-box .num {
-                font-size: 1.5rem;
+            .love-letter-panel {
+                padding: 30px 20px;
             }
-            .player-controls {
-                gap: 12px;
+            .letter-content {
+                font-size: 1.05rem;
             }
-            .volume-slider {
-                width: 60px;
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid {
+                grid-template-columns: 1fr; /* Stack layout if viewport is super narrow */
+            }
+            .glass-panel {
+                padding: 25px 15px;
             }
         }
     </style>
 </head>
 <body>
 
-    <div id="hearts-container"></div>
+    <canvas id="heartsCanvas"></canvas>
 
-    <div id="entrance-overlay">
-        <div class="gate-card">
-            <button class="gate-btn" id="open-btn">Open Invitation 🩶</button>
+    <div id="step1" class="screen">
+        <div class="glass-panel" id="passwordBox">
+            <p class="password-prompt">Enter the secret code to enter 🩶</p>
+            <div class="input-group">
+                <input type="password" id="passwordInput" class="password-input" placeholder="••••" maxlength="8">
+                <p id="errorMsg" class="error-msg">Incorrect token, please try again.</p>
+            </div>
+            <button class="btn-metallic" onclick="checkPassword()">
+                Unlock 
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </button>
         </div>
     </div>
 
-    <div class="main-wrapper" id="main-content">
-        <header>
-            <h1>Happiest Birthday, Hamody 🩶</h1>
-        </header>
-
-        <div id="countdown-wrapper">
-            <div class="countdown-container" id="timer-boxes">
-                <div class="time-box">
-                    <span class="num" id="days">00</span>
-                    <span class="label">Days</span>
-                </div>
-                <div class="time-box">
-                    <span class="num" id="hours">00</span>
-                    <span class="label">Hours</span>
-                </div>
-                <div class="time-box">
-                    <span class="num" id="minutes">00</span>
-                    <span class="label">Mins</span>
-                </div>
-                <div class="time-box">
-                    <span class="num" id="seconds">00</span>
-                    <span class="label">Secs</span>
-                </div>
-            </div>
-            <div class="celebration-msg" id="started-msg" style="display: none;">
-                The celebration has begun! 🩶
-            </div>
+    <div id="step2" class="screen hidden">
+        <div class="glass-panel">
+            <h2 class="gate-title">Welcome inside...</h2>
+            <button class="btn-metallic" onclick="openInvitation()">
+                Open Invitation 🩶
+            </button>
         </div>
-
-        <article class="love-letter-section">
-            <p>happy birthday luv
-            Every day with you is a blessing, and I'm so thankful to God for bringing you into my life. Calling you my partner fills my heart with pure joy, To be honest, I never imagined I'd meet someone as incredible as you. But here you are, becoming everything I've ever wanted and more-a true peace of mind</p>
-            
-            <p>Words fail to capture just how special you are to me. You've become a part of me in a way I didn't think was possible, and I hope that this connection only grows as time grows on. I like you so much, more than I've ever liked anyone before. Falling for you has been the best thing that ever happened to me, and I hope we continue to create beautiful memories together.
-            🩶</p>
-
-            <p>The day we first connected will always be our day-the day everything changed for the better. Meeting you has been the greatest blessing of my life, and I can't wait to celebrate many more birthdays with you. The love and care you've shown me is something I'll cherish forever. Today, the most amazing person I know was born, and I'm endlessly grateful for you</p>
-
-            <p>Happiest birthday hamody</p>
-        </article>
     </div>
 
-    <div class="audio-player-container">
+    <main class="main-wrapper" id="mainContent">
+        
+        <section class="main-header">
+            <h1 class="birthday-title">Happiest Birthday, Hamody 🩶</h1>
+        </section>
+
+        <section class="countdown-container">
+            <div class="countdown-box">
+                <span class="countdown-num" id="days">00</span>
+                <span class="countdown-label">Days</span>
+            </div>
+            <div class="countdown-box">
+                <span class="countdown-num" id="hours">00</span>
+                <span class="countdown-label">Hours</span>
+            </div>
+            <div class="countdown-box">
+                <span class="countdown-num" id="minutes">00</span>
+                <span class="countdown-label">Mins</span>
+            </div>
+            <div class="countdown-box">
+                <span class="countdown-num" id="seconds">00</span>
+                <span class="countdown-label">Secs</span>
+            </div>
+        </section>
+
+        <section class="love-letter-panel">
+            <p class="letter-content">happy birthday luv
+Every day with you is a blessing, and I'm so thankful to God for bringing you into my life. Calling you my partner fills my heart with pure joy, To be honest, I never imagined I'd meet someone as incredible as you. But here you are, becoming everything I've ever wanted and more-a true peace of mind
+
+Words fail to capture just how special you are to me. You've become a part of me in a way I didn't think was possible, and I hope that this connection only grows as time grows on. I like you so much, more than I've ever liked anyone before. Falling for you has been the best thing that ever happened to me, and I hope we continue to create beautiful memories together.
+
+The day we first connected will always be our day-the day everything changed for the better. Meeting you has been the greatest blessing of my life, and I can't wait to celebrate many more birthdays with you. The love and care you've shown me is something I'll cherish forever. Today, the most amazing person I know was born, and I'm endlessly grateful for you
+
+Happiest birthday hamody</p>
+        </section>
+
+        <section class="gallery-container">
+            <div class="gallery-grid">
+                <div class="photo-frame"><img src="1.jpg" alt="Memory 1"></div>
+                <div class="photo-frame"><img src="2.jpg" alt="Memory 2"></div>
+                <div class="photo-frame"><img src="3.jpg" alt="Memory 3"></div>
+                <div class="photo-frame"><img src="4.jpg" alt="Memory 4"></div>
+                <div class="photo-frame"><img src="5.jpg" alt="Memory 5"></div>
+                <div class="photo-frame"><img src="6.jpg" alt="Memory 6"></div>
+                <div class="photo-frame"><img src="7.jpg" alt="Memory 7"></div>
+                <div class="photo-frame"><img src="8.jpg" alt="Memory 8"></div>
+                <div class="photo-frame"><img src="9.jpg" alt="Memory 9"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <audio id="bgMusic" src="bahaa.mp3" loop></audio>
+
+    <div class="music-player-bar" id="musicBar">
         <div class="player-controls">
-            <audio id="bg-music" src="bahaa.mp3" loop></audio>
-            
-            <button class="play-btn" id="play-pause-btn" aria-label="Play/Pause">▶</button>
-            
             <div class="track-info">
-                <strong>bahaa.mp3</strong> — Playing for Hamody
+                <span>Now Playing: bahaa.mp3</span>
+                <span>🩶</span>
             </div>
-            
-            <div class="volume-container">
-                <span>🔊</span>
-                <input type="range" class="volume-slider" id="volume-control" min="0" max="1" step="0.01" value="0.8">
-            </div>
+            <button class="btn-play-pause" id="playPauseBtn" onclick="toggleMusic()" aria-label="Toggle music track">
+                <svg id="playIcon" class="hidden" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg id="pauseIcon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
         </div>
     </div>
 
     <script>
-        // --- DOM ELEMENTS ---
-        const openBtn = document.getElementById('open-btn');
-        const overlay = document.getElementById('entrance-overlay');
-        const mainContent = document.getElementById('main-content');
-        const bgMusic = document.getElementById('bg-music');
-        const playPauseBtn = document.getElementById('play-pause-btn');
-        const volumeControl = document.getElementById('volume-control');
-        const heartsContainer = document.getElementById('hearts-container');
+        // --- 1. Background HTML5 Canvas Particle Engine ---
+        const canvas = document.getElementById('heartsCanvas');
+        const ctx = canvas.getContext('2d');
+        let hearts = [];
 
-        // --- ENTRANCE INITIALIZATION & AUDIO TRIGGER ---
-        openBtn.addEventListener('click', () => {
-            // Hide overlay elegantly
-            overlay.classList.add('hidden');
-            // Reveal main content smoothly
-            mainContent.classList.add('reveal');
-            
-            // Try playing audio immediately on click interaction
-            bgMusic.play().then(() => {
-                playPauseBtn.textContent = '⏸';
-            }).catch(err => {
-                console.log("Autoplay context restriction alternative handle triggered: ", err);
-            });
-
-            // Start background silver heart generators
-            startHeartGeneration();
-        });
-
-        // --- CUSTOM MUSIC PLAYER LOGIC ---
-        playPauseBtn.addEventListener('click', () => {
-            if (bgMusic.paused) {
-                bgMusic.play();
-                playPauseBtn.textContent = '⏸';
-            } else {
-                bgMusic.pause();
-                playPauseBtn.textContent = '▶';
-            }
-        });
-
-        volumeControl.addEventListener('input', (e) => {
-            bgMusic.volume = e.target.value;
-        });
-
-        // --- COUNTDOWN TIMER LOGIC ---
-        const targetDate = new Date('July 15, 2026 00:00:00').getTime();
-
-        const updateCountdown = () => {
-            const now = new Date().getTime();
-            const difference = targetDate - now;
-
-            const timerBoxes = document.getElementById('timer-boxes');
-            const startedMsg = document.getElementById('started-msg');
-
-            if (difference <= 0) {
-                // Target passed
-                timerBoxes.style.display = 'none';
-                startedMsg.style.display = 'block';
-                return;
-            }
-
-            // Time calculation
-            const d = Math.floor(difference / (1000 * 60 * 60 * 24));
-            const h = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-            const s = Math.floor((difference % (1000 * 60)) / 1000);
-
-            // Output data formatted with leading zeroes
-            document.getElementById('days').textContent = d < 10 ? '0' + d : d;
-            document.getElementById('hours').textContent = h < 10 ? '0' + h : h;
-            document.getElementById('minutes').textContent = m < 10 ? '0' + m : m;
-            document.getElementById('seconds').textContent = s < 10 ? '0' + s : s;
-        };
-
-        // Run countdown calculation immediately and then poll every second
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-
-        // --- DYNAMIC SILVER HEARTS ANIMATION SYSTEM ---
-        function startHeartGeneration() {
-            setInterval(() => {
-                const heart = document.createElement('div');
-                heart.classList.add('floating-heart');
-                heart.textContent = '🩶';
-
-                // Randomize sizes, positioning and opacity to achieve visual elegance and depth
-                const size = Math.random() * (24 - 12) + 12; 
-                const left = Math.random() * 100;
-                const duration = Math.random() * (12 - 6) + 6;
-                const opacity = Math.random() * (0.6 - 0.2) + 0.2;
-
-                heart.style.setProperty('--size', `${size}px`);
-                heart.style.setProperty('--left', `${left}%`);
-                heart.style.setProperty('--duration', `${duration}s`);
-                heart.style.setProperty('--opacity', opacity);
-
-                heartsContainer.appendChild(heart);
-
-                // Garbage Collection: Remove hearts once the float up lifecycle completes
-                setTimeout(() => {
-                    heart.remove();
-                }, duration * 1000);
-
-            }, 400); // Emits a new silver heart smoothly every 400ms
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class HeartParticle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 100;
+                this.size = Math.random() * 12 + 6;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1.2 + 0.5;
+                this.opacity = Math.random() * 0.4 + 0.2;
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -20) {
+                    this.y = canvas.height + 20;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.translate(this.x, this.y);
+                ctx.beginPath();
+                
+                // Canvas Vector Paths scaling system mapping a true heart shape
+                const topCurveHeight = this.size * 0.3;
+                ctx.moveTo(0, topCurveHeight);
+                ctx.bezierCurveTo(-this.size / 2, -topCurveHeight, -this.size, topCurveHeight, 0, this.size);
+                ctx.bezierCurveTo(this.size, topCurveHeight, this.size / 2, -topCurveHeight, 0, topCurveHeight);
+                
+                // Chrome Silver Sheen fill linear configurations
+                let gradient = ctx.createLinearGradient(-this.size, -this.size, this.size, this.size);
+                gradient.addColorStop(0, '#8a9597');
+                gradient.addColorStop(0.5, '#e0e0e0');
+                gradient.addColorStop(1, '#9aa2a7');
+                
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initParticles() {
+            for (let i = 0; i < 45; i++) {
+                hearts.push(new HeartParticle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hearts.forEach(heart => {
+                heart.update();
+                heart.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        
+        initParticles();
+        animateParticles();
+
+        // --- 2. Security Module Gate Validation ---
+        function checkPassword() {
+            const inputField = document.getElementById('passwordInput');
+            const targetContainer = document.getElementById('passwordBox');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            if (inputField.value === '7126') {
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+            } else {
+                targetContainer.classList.add('shake');
+                errorMsg.style.opacity = '1';
+                setTimeout(() => {
+                    targetContainer.classList.remove('shake');
+                }, 400);
+            }
+        }
+
+        // Support Enter Key processing for accessibility integration
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // --- 3. Invitation Activation & Audio Pipeline Management ---
+        const audioNode = document.getElementById('bgMusic');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+
+        function openInvitation() {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('mainContent').classList.add('revealed');
+            document.getElementById('musicBar').classList.add('active');
+            
+            // Execute HTML5 Play request handle asynchronously
+            audioNode.play().catch(error => {
+                console.log("Audio autoplay flag caught by browser sandbox environment. Interaction active instead.");
+                toggleMusicUI(false);
+            });
+        }
+
+        function toggleMusic() {
+            if (audioNode.paused) {
+                audioNode.play();
+                toggleMusicUI(true);
+            } else {
+                audioNode.pause();
+                toggleMusicUI(false);
+            }
+        }
+
+        function toggleMusicUI(isPlaying) {
+            if (isPlaying) {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            } else {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            }
+        }
+
+        // --- 4. Synchronous Microseconds Countdown System ---
+        const targetCountdownDate = new Date("July 15, 2026 00:00:00").getTime();
+
+        const countdownInterval = setInterval(function() {
+            const currentTimestamp = new Date().getTime();
+            const distanceMetrics = targetCountdownDate - currentTimestamp;
+
+            // Mathematical operational conversions
+            const d = Math.floor(distanceMetrics / (1000 * 60 * 60 * 24));
+            const h = Math.floor((distanceMetrics % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((distanceMetrics % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((distanceMetrics % (1000 * 60)) / 1000);
+
+            // Display formatting outputs safely parsing single integers
+            document.getElementById("days").innerText = d < 10 ? "0" + d : d;
+            document.getElementById("hours").innerText = h < 10 ? "0" + h : h;
+            document.getElementById("minutes").innerText = m < 10 ? "0" + m : m;
+            document.getElementById("seconds").innerText = s < 10 ? "0" + s : s;
+
+            // Graceful lifecycle handler termination if milestone crossed
+            if (distanceMetrics < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("days").innerText = "00";
+                document.getElementById("hours").innerText = "00";
+                document.getElementById("minutes").innerText = "00";
+                document.getElementById("seconds").innerText = "00";
+            }
+        }, 1000);
     </script>
 </body>
 </html>
